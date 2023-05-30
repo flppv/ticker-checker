@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export function TabTrades({ ticker }: { ticker: string }) {
+  const [loading, setLoading] = useState(true);
   const [trades, setTrades] = useState([]);
 
   async function fetchTrades(ticker: string) {
@@ -9,6 +10,7 @@ export function TabTrades({ ticker }: { ticker: string }) {
       const response = await axios.get(`trades/${ticker}/hist`);
 
       setTrades(response.data);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -17,6 +19,8 @@ export function TabTrades({ ticker }: { ticker: string }) {
   useEffect(() => {
     fetchTrades(ticker);
   }, [ticker]);
+
+  if (loading) return <p>Loading...</p>;
 
   return <pre>{JSON.stringify(trades, null, 2)}</pre>;
 }

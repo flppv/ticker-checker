@@ -9,10 +9,10 @@ import { TabTrades } from "./TabTrades";
 axios.defaults.baseURL =
   "https://cors-anywhere.herokuapp.com/https://api-pub.bitfinex.com/v2/";
 
-// add loading state
 // fix linter errors
 
 function App() {
+  const [loading, setLoading] = useState(true);
   const [tickers, setTickers] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState([]);
   const [activeTab, setActiveTab] = useState("stats");
@@ -48,6 +48,7 @@ function App() {
       try {
         const response = await axios.get("tickers?symbols=ALL");
         setTickers(response.data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -82,6 +83,13 @@ function App() {
         return <TabStats data={selectedTicker} />;
     }
   }
+
+  if (loading)
+    return (
+      <main className="wrapper">
+        <p>Loading...</p>;
+      </main>
+    );
 
   return (
     <main className="wrapper">
