@@ -11,3 +11,11 @@
 
   box-sizing: border-box;
 }
+
+.content {
+  max-width: 800px;
+  max-height: 600px;
+
+  background-color: #eee;
+  overflow-y: auto;
+}
