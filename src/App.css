@@ -73,11 +73,9 @@
 }
 
 .data pre {
-  max-height: 600px;
+  max-height: 800px;
   margin: 0;
   padding: 1em;
-
-  background-color: #eee;
 
   overflow-y: auto;
 }
@@ -107,4 +105,18 @@
 
 .tab-button.active {
   text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  padding: 10px;
+
+  border: 1px solid #eee;
+
+  text-align: left;
 }

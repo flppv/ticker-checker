@@ -6,10 +6,10 @@ import { TabStats } from "./TabStats";
 import { TabCandles } from "./TabCandles";
 import { TabTrades } from "./TabTrades";
 
+// This is a CORS proxy. It allows us to make requests to the Bitfinex API
+// without getting blocked by CORS policy.
 axios.defaults.baseURL =
   "https://cors-anywhere.herokuapp.com/https://api-pub.bitfinex.com/v2/";
-
-// fix linter errors
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,8 @@ function App() {
   const [selectedTicker, setSelectedTicker] = useState([]);
   const [activeTab, setActiveTab] = useState("stats");
 
+  // Have to detect currency type, because the API returns different data for
+  // trading pairs and funding currencies.
   const mainStats = useMemo(() => {
     if (selectedTicker.length === 0)
       return {
@@ -127,6 +129,7 @@ function App() {
               </sup>
             </div>
           </div>
+
           <div className="data">
             <div className="controls">
               {tabs.map((tab) => (
