@@ -9,24 +9,40 @@ import { TabTrades } from "./TabTrades";
 // This is a CORS proxy. It allows us to make requests to the Bitfinex API
 // without getting blocked by CORS policy.
 axios.defaults.baseURL =
-  "https://cors-anywhere.herokuapp.com/https://api-pub.bitfinex.com/v2/";
+  "https://corsproxy.io/?https://api-pub.bitfinex.com/v2/";
+
+const mainStatsPlaceholder: MainStats = {
+  type: "Unknown",
+  symbol: "",
+  price: 0,
+  change: 0,
+};
+
+const tabs: Tab[] = [
+  {
+    name: "stats",
+    label: "Stats",
+  },
+  {
+    name: "candles",
+    label: "Candles",
+  },
+  {
+    name: "trades",
+    label: "Trades",
+  },
+];
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [tickers, setTickers] = useState([]);
-  const [selectedTicker, setSelectedTicker] = useState([]);
-  const [activeTab, setActiveTab] = useState("stats");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [tickers, setTickers] = useState<any[]>([]);
+  const [selectedTicker, setSelectedTicker] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<TabName>("stats");
 
   // Have to detect currency type, because the API returns different data for
   // trading pairs and funding currencies.
-  const mainStats = useMemo(() => {
-    if (selectedTicker.length === 0)
-      return {
-        type: "Unknown",
-        symbol: "",
-        price: 0,
-        change: 0,
-      };
+  const mainStats = useMemo<MainStats>(() => {
+    if (selectedTicker.length === 0) return mainStatsPlaceholder;
 
     if (selectedTicker[0][0] === "t") {
       return {
@@ -42,6 +58,8 @@ function App() {
         price: selectedTicker[10],
         change: selectedTicker[9] * 100,
       };
+    } else {
+      return mainStatsPlaceholder;
     }
   }, [selectedTicker]);
 
@@ -59,22 +77,7 @@ function App() {
     fetchTickers();
   }, []);
 
-  const tabs = [
-    {
-      name: "stats",
-      label: "Stats",
-    },
-    {
-      name: "candles",
-      label: "Candles",
-    },
-    {
-      name: "trades",
-      label: "Trades",
-    },
-  ];
-
-  function renderActiveTabContent(activeTab: string) {
+  function renderActiveTabContent(activeTab: TabName) {
     switch (activeTab) {
       case "candles":
         return <TabCandles ticker={selectedTicker[0]} />;
@@ -115,24 +118,24 @@ function App() {
         <div className="content">
           <div className="info">
             <div className="symbol">
-              <span>{mainStats?.symbol}</span>
+              <span>{mainStats.symbol}</span>
               <span className="type">{mainStats?.type}</span>
             </div>
             <div className="price">
-              ${mainStats?.price}{" "}
+              ${mainStats.price}{" "}
               <sup
                 style={{
-                  color: mainStats?.change >= 0 ? "green" : "tomato",
+                  color: mainStats.change >= 0 ? "green" : "tomato",
                 }}
               >
-                {mainStats?.change.toFixed(2)}%
+                {mainStats.change.toFixed(2)}%
               </sup>
             </div>
           </div>
 
           <div className="data">
             <div className="controls">
-              {tabs.map((tab) => (
+              {tabs.map((tab: Tab) => (
                 <button
                   key={tab.name}
                   className={

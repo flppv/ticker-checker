@@ -73,4 +73,6 @@ export function TabTrades({ ticker }: { ticker: string }) {
       </div>
     );
   }
+
+  return null;
 }

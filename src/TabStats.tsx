@@ -1,4 +1,4 @@
-export function TabStats({ data }: { data: never[] }) {
+export function TabStats({ data }: { data: any[] }) {
   const tradingPairStats = [
     "Bid",
     "Bid Size",
@@ -74,4 +74,6 @@ export function TabStats({ data }: { data: never[] }) {
       </div>
     );
   }
+
+  return null;
 }
