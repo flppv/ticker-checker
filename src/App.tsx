@@ -2,19 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
 import "./App.css";
+import { TabStats } from "./TabStats";
+import { TabCandles } from "./TabCandles";
+import { TabTrades } from "./TabTrades";
 
 axios.defaults.baseURL =
   "https://cors-anywhere.herokuapp.com/https://api-pub.bitfinex.com/v2/";
 
 // add loading state
-// break into components
 // fix linter errors
 
 function App() {
   const [tickers, setTickers] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState([]);
-  const [candles, setCandles] = useState([]);
-  const [trades, setTrades] = useState([]);
   const [activeTab, setActiveTab] = useState("stats");
 
   const mainStats = useMemo(() => {
@@ -56,42 +56,31 @@ function App() {
     fetchTickers();
   }, []);
 
-  async function fetchCandles(ticker: string) {
-    try {
-      const response = await axios.get(`candles/trade:1m:${ticker}/hist`);
-      setCandles(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function fetchTrades(ticker: string) {
-    try {
-      const response = await axios.get(`trades/${ticker}/hist`);
-
-      setTrades(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const tabs = [
+    {
+      name: "stats",
+      label: "Stats",
+    },
+    {
+      name: "candles",
+      label: "Candles",
+    },
+    {
+      name: "trades",
+      label: "Trades",
+    },
+  ];
 
   function renderActiveTabContent(activeTab: string) {
-    let dataToRender = [];
-
     switch (activeTab) {
       case "candles":
-        dataToRender = candles;
-        break;
+        return <TabCandles ticker={selectedTicker[0]} />;
       case "trades":
-        dataToRender = trades;
-        break;
+        return <TabTrades ticker={selectedTicker[0]} />;
       case "stats":
       default:
-        dataToRender = selectedTicker;
-        break;
+        return <TabStats data={selectedTicker} />;
     }
-
-    return JSON.stringify(dataToRender, null, 2);
   }
 
   return (
@@ -132,37 +121,17 @@ function App() {
           </div>
           <div className="data">
             <div className="controls">
-              <button
-                className={
-                  "tab-button" + (activeTab === "stats" ? " active" : "")
-                }
-                onClick={() => setActiveTab("stats")}
-              >
-                Stats
-              </button>
-              <button
-                className={
-                  "tab-button" + (activeTab === "candles" ? " active" : "")
-                }
-                onClick={() => {
-                  fetchCandles(selectedTicker[0]);
-                  setActiveTab("candles");
-                }}
-              >
-                Candles
-              </button>
-              <button
-                className={
-                  "tab-button" + (activeTab === "trades" ? " active" : "")
-                }
-                onClick={() => {
-                  fetchTrades(selectedTicker[0]);
-
-                  setActiveTab("trades");
-                }}
-              >
-                Trades
-              </button>
+              {tabs.map((tab) => (
+                <button
+                  key={tab.name}
+                  className={
+                    "tab-button" + (activeTab === tab.name ? " active" : "")
+                  }
+                  onClick={() => setActiveTab(tab.name)}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             <pre>{renderActiveTabContent(activeTab)}</pre>
